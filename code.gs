@@ -131,3 +131,14 @@ function updateServerTime() {
     Logger.log("Error in updateServerTime: " + error.message);
   }
 }
+
+function sendNotification(message) {
+  try {
+    const webhookURL = getWebhookURL(sheet);
+    const payload = { content: message };
+    UrlFetchApp.fetch(webhookURL, { method: "post", contentType: "application/json", payload: JSON.stringify(payload) });
+    Logger.log("Notification sent: " + message);
+  } catch (error) {
+    Logger.log("Error sending notification: " + error.message);
+  }
+}
