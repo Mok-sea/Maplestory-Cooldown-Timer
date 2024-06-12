@@ -55,7 +55,7 @@ function onEdit(e) {
       if (cooldownHours && !isNaN(cooldownHours)) {
 
         var resetTime = new Date(currentDateTime);
-        resetTime.setHours(resetTime.getHours() + 1 + cooldownHours);
+        resetTime.setHours(resetTime.getHours() + cooldownHours);
         Logger.log(resetTime);
 
         sheet.getRange(eventRow, 4).setValue(resetTime);
