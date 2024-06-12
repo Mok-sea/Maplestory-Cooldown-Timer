@@ -4,7 +4,7 @@
 let time = new Date(); // Store current time
 let timeZone = Session.getScriptTimeZone(); // Store user's timezone
 Logger.log(timeZone); // Log user's timezone
-let formattedTime = Utilities.formatDate(time, timeZone, 'yyyy-MM-dd HH:mm:ss'); // format datetime
+let localTime = Utilities.formatDate(time, timeZone, 'yyyy-MM-dd HH:mm:ss'); // format datetime
 let sheet = getActiveSheet(); // store current sheet
 
 function onOpen() {
@@ -57,7 +57,7 @@ function onEdit(e) {
         var resetTime = new Date(localTime);
         resetTime.setHours(resetTime.getHours() + 1 + cooldownHours);
         Logger.log(resetTime);
-
+        
         sheet.getRange(eventRow, 4).setValue(resetTime);
         sheet.getRange(eventRow, 5).setValue(""); 
         Logger.log("Reset triggered for row " + eventRow + ", new reset time: " + resetTime);
@@ -72,7 +72,41 @@ function onEdit(e) {
 
 function updateCountdowns(sheet) {
   try {
-    var diff = reset
+    Logger.log("updateCountdowns triggered");
+
+    var data = sheet.getDataRange().getValues();
+//  var now = new Date();
+//  var userTimeZone = getUserTimeZone(sheet);
+    var batchUpdates = [];
+
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][3] != "" && data[i][3] != "Target Time") {
+        try {
+          var activityName = data[i][1]; 
+          var resetTime = new Date(data[i][3]);
+          var diff = resetTime.getTime() - now.getTime();
+          var countdown;
+
+          if (diff > 0) {
+            var hours = Math.floor(diff / (60 * 60 * 1000));
+            var minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+            var seconds = Math.floor((diff % (60 * 1000)) / 1000);
+            countdown = hours + "h " + minutes + "m " + seconds + "s";
+          } else {
+            countdown = "Ready";
+            sheet.getRange(i + 1, 4).setValue(""); 
+            sendNotification("Cooldown timer reached for " + activityName);
+          }
+
+          batchUpdates.push({range: sheet.getRange(i + 1, 5), value: countdown});
+        } catch (e) {
+          Logger.log("Error processing row " + (i + 1) + ": " + e.message);
+        }
+      }
+    }
+
+    batchUpdates.forEach(update => update.range.setValue(update.value));
+    Logger.log("Countdowns updated successfully");
   } catch (error) {
     Logger.log("Error in updateCountdowns: " + error.message);
   }
