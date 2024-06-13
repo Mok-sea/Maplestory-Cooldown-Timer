@@ -80,7 +80,7 @@ function updateCountdowns(sheet) {
     var batchUpdates = [];
 
     for (var i = 1; i < data.length; i++) {
-      if (data[i][3] != "" && data[i][3] != "Target Time") {
+      if (data[i][3] != "" && data[i][3] != "Reset Time") {
         try {
           var activityName = data[i][1]; 
           var resetTime = new Date(data[i][3]);
