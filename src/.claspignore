@@ -1,5 +1,5 @@
 # Ignore all below within src/
 src/legacy.gs
 src/timeOnly.gs
-src/appsscript.json
+
 
