@@ -1,0 +1,3 @@
+# ignore these files…
+**/legacy.gs
+**/timeOnly.gs
